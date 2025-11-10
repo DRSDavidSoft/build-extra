@@ -1,5 +1,5 @@
-# Git for Windows v2.49.0 Release Notes
-Latest update: March 17th 2025
+# Git for Windows v2.51.2 Release Notes
+Latest update: October 28th 2025
 
 ## Introduction
 
@@ -37,10 +37,122 @@ Git is licensed under the GNU General Public License version 2.
 
 Git for Windows is distributed with other components yet, such as Bash, zlib, curl, tcl/tk, perl, MSYS2. Each of these components is governed by their respective license.
 
+## Changes since Git for Windows v2.51.2 (October 28th 2025)
+
+As announced in several recent release notes, [`git svn` is no longer supported by the Git for Windows project](https://github.com/git-for-windows/git/issues/5405).
+
+### New Features
+
+* Comes with [PCRE2 v10.47](https://github.com/PCRE2Project/pcre2/releases/tag/pcre2-10.47).
+* Comes with [cURL v8.17.0](https://curl.se/changes.html#8_17_0).
+
+## Changes since Git for Windows v2.51.1 (October 17th 2025)
+
+### New Features
+
+* Comes with [Git v2.51.2](https://github.com/git/git/blob/v2.51.2/Documentation/RelNotes/2.51.2.adoc).
+
+### Bug Fixes
+
+* The default credential helper in the portable variant of Git for Windows (`credential-helper-selector`) [is now high DPI aware](https://github.com/git-for-windows/build-extra/pull/651).
+
+## Changes since Git for Windows v2.51.0(2) (September 29th 2025)
+
+This is a security release! Git LFS (which is enabled by default in Git for Windows) fixes [CVE-2025-26625](https://github.com/git-lfs/git-lfs/security/advisories/GHSA-6pvw-g552-53c5) (Severity rated High, 8.6 / 10) in v3.7.1. Please only clone or pull from repositories you trust until you upgraded.
+
+Due to persistent maintenance challenges and the community's limited engagement and usage, `git svn` support in Git for Windows will be [dropped from the next major Git for Windows release](https://github.com/git-for-windows/git/issues/5405).
+
+Note that `git flow` is no longer shipped with Git for Windows, after a version had been distributed that had been languishing for years. Even the original, years-stale Git Flow project [has been archived](https://github.com/nvie/gitflow/issues/3#issuecomment-3400894835).
+
+### New Features
+
+* Comes with [Git v2.51.1](https://github.com/git/git/blob/v2.51.1/Documentation/RelNotes/2.51.1.adoc).
+* Comes with [Git LFS v3.7.1](https://github.com/git-lfs/git-lfs/releases/tag/v3.7.1), addressing [CVE-2025-26625](https://github.com/git-lfs/git-lfs/security/advisories/GHSA-6pvw-g552-53c5).
+* Comes with [OpenSSL v3.5.4](https://www.openssl.org/news/openssl-3.5-notes.html).
+* Comes with the MSYS2 runtime (Git for Windows flavor) based on [Cygwin v3.6.5](https://inbox.sourceware.org/cygwin-announce/d0ea504c-d683-4ed6-a47e-e866ddd37613@dronecode.org.uk/).
+* Comes with [OpenSSH v10.2.P1](https://github.com/openssh/openssh-portable/releases/tag/V_10_2_P1).
+* Drops `git flow`.
+
+### Bug Fixes
+
+* A potential memory corruption in the optional `wincred` credential helper [was fixed](https://github.com/git-for-windows/git/pull/5856).
+
+## Changes since Git for Windows v2.51.0 (August 19th 2025)
+
+### New Features
+
+* Comes with [PCRE2 v10.46](https://github.com/PCRE2Project/pcre2/releases/tag/pcre2-10.46).
+* Comes with [cURL v8.16.0](https://curl.se/changes.html#8_16_0). This addresses [a bug where fetches/pushes could fail with `failed to read data from server: SEC_E_CONTEXT_EXPIRED (0x80090317)` under certain circumstances](https://github.com/git-for-windows/git/issues/5838). Also included: a [back-port of a fix](https://github.com/git-for-windows/MINGW-packages/pull/163) for a bug where connection failures were mistakenly reported as time-outs.
+* Comes with [Tig v2.6.0](https://github.com/jonas/tig/releases/tag/tig-2.6.0).
+* Comes with [MinTTY v3.8.1](https://github.com/mintty/mintty/releases/tag/3.8.1).
+* Comes with [OpenSSL v3.5.3](https://www.openssl.org/news/openssl-3.5-notes.html).
+
+### Bug Fixes
+
+* The auto-updater now shows Git for Windows icon in the notification [also on Windows/ARM64](https://github.com/git-for-windows/build-extra/pull/644).
+* `git clone`/`git fetch` now deals more gracefully with directory / file conflicts when the files backend is used for ref storage, by failing only the ones that are involved in the conflict while allowing others. This is a regression in Git v2.51.0 that was [reported in Git for Windows](https://github.com/git-for-windows/git/issues/5804) and independently also [to the Git mailing list](https://lore.kernel.org/git/YQXPR01MB3046197EF39296549EE6DD669A33A@YQXPR01MB3046.CANPRD01.PROD.OUTLOOK.COM/). This was fixed by merging Git's topic branch [`kn/refs-files-case-insensitive`](https://github.com/gitgitgadget/git/commits/kn/refs-files-case-insensitive).
+* Support for pathspecs in `diff --no-index` [was somewhat buggy](https://github.com/git-for-windows/issues/5836), which has been fixed.
+* `git sparse-checkout` subcommand learned a new `clean` action to prune otherwise unused working-tree files that are outside the areas of interest. An earlier version of this had been [integrated into Microsoft Git already](https://github.com/microsoft/git/pull/796). This was fixed by merging Git's topic branch [`ds/sparse-checkout-clean`](https://github.com/gitgitgadget/git/commits/ds/sparse-checkout-clean).
+* `git rebase -i` failed to clean-up the commit log message when the command commits the final one in a chain of "fixup" commands, which has been corrected. Backported from Git's topic branch [`pw/rebase-i-cleanup-fix`](https://github.com/gitgitgadget/git/commits/pw/rebase-i-cleanup-fix).
+* `git subtree` did not work correctly when splitting squashed subtrees, which has been improved. Backported from Git's topic branch [`cs/subtree-squash-split-fix`](https://github.com/gitgitgadget/git/commits/cs/subtree-squash-split-fix).
+* Some among `git add -p` and friends ignored `color.diff` and/or `color.ui` configuration variables, which is an old regression, which has been corrected. This was fixed by merging Git's topic branch [`jk/add-i-color`](https://github.com/gitgitgadget/git/commits/jk/add-i-color).
+* A corner-case bug in `git log -L...` has been corrected. This was fixed by merging Git's topic branch [`sg/line-log-boundary-fixes`](https://github.com/gitgitgadget/git/commits/sg/line-log-boundary-fixes).
+* A broken or malicious `git fetch` can say that it has the same object for many many times, and the upload-pack serving it can exhaust memory storing them redundantly, which has been corrected. This was fixed by merging Git's topic branch [`ps/upload-pack-oom-protection`](https://github.com/gitgitgadget/git/commits/ps/upload-pack-oom-protection).
+* Fixes multiple crashes around midx write-out codepaths. This was fixed by merging Git's topic branch [`ds/midx-write-fixes`](https://github.com/gitgitgadget/git/commits/ds/midx-write-fixes).
+* `git repack --path-walk` lost objects in some corner cases, which has been corrected. This was fixed by merging Git's topic branch [`ds/path-walk-repack-fix`](https://github.com/gitgitgadget/git/commits/ds/path-walk-repack-fix).
+* Under a race against another process that is repacking the repository, especially a partially cloned one, `git fetch` may mistakenly think some objects we do have are missing, which has been corrected. This was fixed by merging Git's topic branch [`jk/fetch-check-graph-objects-fix`](https://github.com/gitgitgadget/git/commits/jk/fetch-check-graph-objects-fix).
+* Various options to `git diff` that makes comparison ignore certain aspects of the differences (like "space changes are ignored", "differences in lines that match these regular expressions are ignored") did not work well with `--name-only` and friends. This was fixed by merging Git's topic branch [`ly/diff-name-only-with-diff-from-content`](https://github.com/gitgitgadget/git/commits/ly/diff-name-only-with-diff-from-content).
+* `git diff --no-index` run inside a subdirectory under control of a Git repository operated at the top of the working tree and stripped the prefix from the output, and oddballs like "-" (stdin) did not work correctly because of it.  Correct the set-up by undoing what the set-up sequence did to the current working directory and prefix. This was fixed by merging Git's topic branch [`jc/diff-no-index-in-subdir`](https://github.com/gitgitgadget/git/commits/jc/diff-no-index-in-subdir).
+* Various bugs about rename handling in "ort" merge strategy have been fixed. This was fixed by merging Git's topic branch [`en/ort-rename-fixes`](https://github.com/gitgitgadget/git/commits/en/ort-rename-fixes).
+* `git push` had a code path that led to `BUG()` but it should have reported a regular failure, as it is a response to a usual but invalid end-user action to attempt pushing an object that does not exist. This was fixed by merging Git's topic branch [`dl/push-missing-object-error`](https://github.com/gitgitgadget/git/commits/dl/push-missing-object-error).
+* `git refs migrate` to migrate the reflog entries from a refs  backend to another had a handful of bugs squashed. This was fixed by merging Git's topic branch [`ps/reflog-migrate-fixes`](https://github.com/gitgitgadget/git/commits/ps/reflog-migrate-fixes).
+* During interactive rebase, using `drop` on a merge commit lead to an error, which was incorrect. This was fixed by merging Git's topic branch [`js/rebase-i-allow-drop-on-a-merge`](https://github.com/gitgitgadget/git/commits/js/rebase-i-allow-drop-on-a-merge).
+
+## Changes since Git for Windows v2.50.1 (July 8th 2025)
+
+### New Features
+
+* Comes with [Git v2.51.0](https://github.com/git/git/blob/v2.51.0/Documentation/RelNotes/2.51.0.adoc).
+* The Portable Git installers (which are self-extracting 7-Zip archives) are now based off of [7-Zip 25.01](https://sourceforge.net/p/sevenzip/discussion/45797/thread/da14cd780b/)
+* Comes with [cURL v8.15.0](https://curl.se/changes.html#8_15_0).
+* Comes with the MSYS2 runtime (Git for Windows flavor) based on [Cygwin v3.6.4](https://cygwin.com/pipermail/cygwin-announce/2025-July/012416.html).
+* Comes with [MinTTY v3.7.9](https://github.com/mintty/mintty/releases/tag/3.7.9).
+
+## Changes since Git for Windows v2.50.0(2) (July 1st 2025)
+
+This is a security fix release, addressing CVE-2024-50349, CVE-2024-52006, CVE-2025-27613, CVE-2025-27614, CVE-2025-46334, CVE-2025-46835, CVE-2025-48384, CVE-2025-48385, and CVE-2025-48386.
+
+### New Features
+
+* Comes with [Git v2.50.1](https://github.com/git/git/blob/v2.50.1/Documentation/RelNotes/2.50.1.adoc).
+
+### Bug Fixes
+
+* [**CVE-2025-27613**](https://github.com/j6t/gitk/security/advisories/GHSA-f3cw-xrj3-wr2v), Gitk: When a user clones an untrusted repository and runs Gitk without additional command arguments, any writable file can be created and truncated. The option "Support per-file encoding" must have been enabled. The operation "Show origin of this line" is affected as well, regardless of the option being enabled or not.
+* [**CVE-2025-27614**](https://github.com/j6t/gitk/security/advisories/GHSA-g4v5-fjv9-mhhc), Gitk: A Git repository can be crafted in such a way that a user who has cloned the repository can be tricked into running any script supplied by the attacker by invoking `gitk filename`, where `filename` has a particular structure.
+* [**CVE-2025-46334**](https://github.com/j6t/git-gui/security/advisories/GHSA-7px4-9hg2-fvhx), Git GUI (Windows only): A malicious repository can ship versions of sh.exe or typical textconv filter programs such as astextplain. On Windows, path lookup can find such executables in the worktree. These programs are invoked when the user selects "Git Bash" or "Browse Files" from the menu.
+* [**CVE-2025-46835**](https://github.com/j6t/git-gui/security/advisories/GHSA-xfx7-68v4-v8fg), Git GUI: When a user clones an untrusted repository and is tricked into editing a file located in a maliciously named directory in the repository, then Git GUI can create and overwrite any writable file.
+* [**CVE-2025-48384**](https://github.com/git/git/security/advisories/GHSA-vwqx-4fm8-6qc9), Git: When reading a config value, Git strips any trailing carriage return and line feed (CRLF). When writing a config entry, values with a trailing CR are not quoted, causing the CR to be lost when the config is later read.  When initializing a submodule, if the submodule path contains a trailing CR, the altered path is read resulting in the submodule being checked out to an incorrect location. If a symlink exists that points the altered path to the submodule hooks directory, and the submodule contains an executable post-checkout hook, the script may be unintentionally executed after checkout.
+* [**CVE-2025-48385**](https://github.com/git/git/security/advisories/GHSA-m98c-vgpc-9655), Git: When cloning a repository Git knows to optionally fetch a bundle advertised by the remote server, which allows the server-side to offload parts of the clone to a CDN. The Git client does not perform sufficient validation of the advertised bundles, which allows the remote side to perform protocol injection. This protocol injection can cause the client to write the fetched bundle to a location controlled by the adversary. The fetched content is fully controlled by the server, which can in the worst case lead to arbitrary code execution.
+* [**CVE-2025-48386**](https://github.com/git/git/security/advisories/GHSA-4v56-3xvj-xvfr), Git: The wincred credential helper uses a static buffer (`target`) as a unique key for storing and comparing against internal storage. This credential helper does not properly bounds check the available space remaining in the buffer before appending to it with `wcsncat()`, leading to potential buffer overflows.
+
+## Changes since Git for Windows v2.50.0 (June 16th 2025)
+
+### New Features
+
+* Comes with [Git LFS v3.7.0](https://github.com/git-lfs/git-lfs/releases/tag/v3.7.0).
+
+### Bug Fixes
+
+* Cloning large repositories via SSH [frequently hung with Git for Windows v2.50.0](https://github.com/git-for-windows/git/issues/5688), which [was fixed](https://github.com/git-for-windows/msys2-runtime/pull/103).
+* In Git for Windows v2.50.0, operations using the POSIX emulation layer (cloning via SSH, generating the Bash prompt) cannot be interrupted by Ctrl+C, which [has been fixed](https://github.com/git-for-windows/msys2-runtime/pull/104).
+* Git for Windows v2.50.0 is [unable to initialize Git repositories on Windows Server 2016](https://github.com/git-for-windows/git/issues/5695), which has been [fixed](https://github.com/git-for-windows/git/pull/5700).
+
 ## Changes since Git for Windows v2.49.0 (March 17th 2025)
 
 ### New Features
 
+* Comes with [Git v2.50.0](https://github.com/git/git/blob/v2.50.0/Documentation/RelNotes/2.50.0.adoc).
 * Comes with [MinTTY v3.7.8](https://github.com/mintty/mintty/releases/tag/3.7.8).
 * Comes with [OpenSSH v10.0.P1](https://github.com/openssh/openssh-portable/releases/tag/V_10_0_P1).
 * Comes with [cURL v8.14.1](https://curl.se/changes.html#8_14_1).

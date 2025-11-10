@@ -50,7 +50,7 @@ then
 	PACKAGE_EXCLUDES="$PACKAGE_EXCLUDES mingw-w64-bzip2 mingw-w64-c-ares
 		mingw-w64-libsystre mingw-w64-libtre-git mingw-w64-p11-kit
 		mingw-w64-tcl mingw-w64-tk mingw-w64-wineditline gdbm icu libdb
-		libedit libgdbm perl perl-.*"
+		libedit libgdbm perl perl-.* mingw-w64-tzdata"
 fi
 if test -z "$INCLUDE_GIT_UPDATE"
 then
@@ -160,7 +160,7 @@ LIBCURL_EXTRA=
 required=
 for req in mingw-w64-$PACMAN_ARCH-git-credential-manager $SH_FOR_REBASE $LIBCURL_EXTRA \
 	$(test -n "$MINIMAL_GIT" || echo \
-		mingw-w64-$PACMAN_ARCH-connect git-flow unzip docx2txt \
+		mingw-w64-$PACMAN_ARCH-connect unzip docx2txt \
 		mingw-w64-$PACMAN_ARCH-antiword mingw-w64-$PACMAN_ARCH-odt2txt \
 		mingw-w64-$PACMAN_ARCH-xpdf-tools ssh-pageant mingw-w64-$PACMAN_ARCH-git-lfs \
 		tig nano perl-JSON libpcre2_8 libpcre2posix $GIT_UPDATE_EXTRA_PACKAGES)
@@ -183,7 +183,7 @@ if test -z "$MINIMAL_GIT"
 then
 	packages="$packages mingw-w64-$PACMAN_ARCH-git-doc-html ncurses mintty vim nano
 		winpty less gnupg tar diffutils patch dos2unix which subversion perl-JSON
-		mingw-w64-$PACMAN_ARCH-tk mingw-w64-$PACMAN_ARCH-connect git-flow docx2txt
+		mingw-w64-$PACMAN_ARCH-tk mingw-w64-$PACMAN_ARCH-connect docx2txt
 		mingw-w64-$PACMAN_ARCH-antiword mingw-w64-$PACMAN_ARCH-odt2txt ssh-pageant
 		mingw-w64-$PACMAN_ARCH-git-lfs mingw-w64-$PACMAN_ARCH-xz tig $GIT_UPDATE_EXTRA_PACKAGES"
 fi
@@ -192,6 +192,11 @@ I686_EXCLUDE=
 if test i686 = "$ARCH" && ! grep msys-uuid-1 /usr/bin/msys-apr-1-0.dll 2>&1 >/dev/null
 then
 	I686_EXCLUDE='uuid\|lzma\|'
+fi
+ASSUAN_0_EXCLUDE=
+if ! grep msys-assuan-0 /usr/bin/gpg.exe 2>&1 >/dev/null
+then
+	ASSUAN_0_EXCLUDE='\|assuan-0'
 fi
 
 pacman_list $packages "$@" |
@@ -244,7 +249,7 @@ grep -v -e '\.[acho]$' -e '\.l[ao]$' -e '/aclocal/' \
 	-e '^/usr/bin/msys-\('"$I686_EXCLUDE"'fdisk\|gettextpo\|gmpxx\|gnutlsxx\|gomp\|xml2\|xslt\|exslt\)-.*\.dll$' \
 	-e '^/usr/bin/msys-\(hdb\|history8\|kadm5\|kdc\|otp\|sl\).*\.dll$' \
 	-e '^/usr/bin/msys-\(atomic\|blkid\|charset\|gthread\|metalink\|nghttp2\|ssh2\|kafs\)-.*\.dll$' \
-	-e '^/usr/bin/msys-\(ncurses++w6\|asprintf-[0-9]*\|\)\.dll$' \
+	-e '^/usr/bin/msys-\(ncurses++w6\|asprintf-[0-9]*'"$ASSUAN_0_EXCLUDE"'\)\.dll$' \
 	-e '^/usr/bin/msys-\(formw6\|menuw6\|panelw6\)\.dll$' \
 	-e '^/usr/bin/msys-svn_swig_\(py\|ruby\)-.*\.dll$' \
 	-e '^/usr/bin/\(dumper\|sasl.*\|sshd\)\.exe$' \

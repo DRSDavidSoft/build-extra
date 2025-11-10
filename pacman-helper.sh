@@ -224,6 +224,7 @@ quick_action () { # <action> <file>...
 	git -C "$dir" config set remote.origin.partialCloneFilter blob:none &&
 	git -C "$dir" config set core.sparseCheckout true &&
 	git -C "$dir" config set core.sparseCheckoutCone false &&
+	mkdir -p "$dir"/.git/info &&
 	printf '%s\n' '/git-*.db*' '/git-*.files*' >"$dir"/.git/info/sparse-checkout &&
 	printf '%s\n' '/git-for-windows.db*' '/git-for-windows.files*' >"$dir"/.git/info/exclude &&
 	mkdir "$dir/sources" ||
@@ -444,7 +445,7 @@ quick_action () { # <action> <file>...
 		 # `:(exclude)<pkgname>-[0-9]*-*-*-*`
 		 s/$/-*-*-*/
 		 s/^/:(exclude)/' |
-		 xargs git rm --sparse --cached -- ||
+		 xargs git rm --sparse --cached --ignore-unmatch -- ||
 		 die "Could not remove the existing versions from the Git branch in $arch"
 
 		 # Now add the files to the Git branch
