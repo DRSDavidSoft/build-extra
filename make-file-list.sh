@@ -33,7 +33,7 @@ UTIL_PACKAGES="sed awk grep findutils coreutils"
 if test -n "$MINIMAL_GIT_WITH_BUSYBOX"
 then
 	PACKAGE_EXCLUDES="$PACKAGE_EXCLUDES bash sh coreutils mingw-w64-busybox
-		libiconv libintl libreadline ncurses openssl
+		libiconv iconv libintl libreadline ncurses openssl
 		mingw-w64-libmetalink mingw-w64-spdylay diffutils"
 
 	EXTRA_FILE_EXCLUDES="/etc/post-install/.* /usr/bin/getfacl.exe
@@ -50,7 +50,9 @@ then
 	PACKAGE_EXCLUDES="$PACKAGE_EXCLUDES mingw-w64-bzip2 mingw-w64-c-ares
 		mingw-w64-libsystre mingw-w64-libtre-git mingw-w64-p11-kit
 		mingw-w64-tcl mingw-w64-tk mingw-w64-wineditline gdbm icu libdb
-		libedit libgdbm perl perl-.* mingw-w64-tzdata"
+		libedit libgdbm perl perl-.* mingw-w64-tzdata
+		mingw-w64-git-svn subversion libserf apr apr-util expat libexpat liblz4
+		vim nano"
 fi
 if test -z "$INCLUDE_GIT_UPDATE"
 then
@@ -146,6 +148,7 @@ has_pacman_package () {
 	for dir in /var/lib/pacman/local/$1-[0-9]*
 	do
 		# Be careful in case a package name contains `-<digit>`
+		test -d $dir &&
 		test /var/lib/pacman/local/$1 = ${dir%-*-*} &&
 		return 0
 	done
@@ -177,8 +180,12 @@ test -z "$required" || {
 	grep -v 'database file for .* does not exist' <"$pacman_stderr" >&2
 }
 
-packages="mingw-w64-$PACMAN_ARCH-git mingw-w64-$PACMAN_ARCH-git-credential-manager
-mingw-w64-$PACMAN_ARCH-git-extra openssh $UTIL_PACKAGES $LIBCURL_EXTRA"
+has_pacman_package mingw-w64-$PACMAN_ARCH-git-for-windows-addons &&
+G4W_PACKAGE=mingw-w64-$PACMAN_ARCH-git-for-windows-addons ||
+G4W_PACKAGE=mingw-w64-$PACMAN_ARCH-git
+
+packages="$G4W_PACKAGE mingw-w64-$PACMAN_ARCH-git-credential-manager
+mingw-w64-$PACMAN_ARCH-git-extra openssh msys2-runtime $UTIL_PACKAGES $LIBCURL_EXTRA"
 if test -z "$MINIMAL_GIT"
 then
 	packages="$packages mingw-w64-$PACMAN_ARCH-git-doc-html ncurses mintty vim nano
@@ -186,6 +193,7 @@ then
 		mingw-w64-$PACMAN_ARCH-tk mingw-w64-$PACMAN_ARCH-connect docx2txt
 		mingw-w64-$PACMAN_ARCH-antiword mingw-w64-$PACMAN_ARCH-odt2txt ssh-pageant
 		mingw-w64-$PACMAN_ARCH-git-lfs mingw-w64-$PACMAN_ARCH-xz tig $GIT_UPDATE_EXTRA_PACKAGES"
+	test i686 = "$ARCH" || packages="$packages iconv"
 fi
 
 I686_EXCLUDE=
@@ -235,6 +243,7 @@ grep -v -e '\.[acho]$' -e '\.l[ao]$' -e '/aclocal/' \
 	-e '^/\(mingw\|clang\)[^/]*/.*/git-\(remote-testsvn\|shell\)\.exe$' \
 	-e '^/\(mingw\|clang\)[^/]*/.*/git-cvsserver.*$' \
 	-e '^/\(mingw\|clang\)[^/]*/.*/gitweb/' \
+	-e '^/\(mingw\|clang\)[^/]*/.*/git-instaweb' \
 	-e '^/\(mingw\|clang\)[^/]*/lib/\(dde\|itcl\|sqlite\|tdbc\)' \
 	-e '^/\(mingw\|clang\)[^/]*/libexec/git-core/git-archimport$' \
 	-e '^/\(mingw\|clang\)[^/]*/share/doc/git-doc/git-archimport' \
@@ -258,6 +267,8 @@ grep -v -e '\.[acho]$' -e '\.l[ao]$' -e '/aclocal/' \
 	-e '^/usr/lib/\(itcl\|tdbc\|pkcs11/p11-kit-client\|thread\)' \
 	-e '^/usr/lib/ssh/sshd\($\|-\)' \
 	-e '^/usr/share.*/magic$' \
+	-e '^/usr/lib/perl5/core_perl/auto/DB_File/' \
+	-e '^/usr/lib/perl5/core_perl/DB_File\.pm$' \
 	-e '^/usr/share/perl5/core_perl/Unicode/' \
 	-e '^/usr/share/perl5/core_perl/pods/' \
 	-e '^/usr/share/perl5/core_perl/Locale/' \
@@ -282,7 +293,7 @@ if test -z "$MINIMAL_GIT"
 then
 	cat
 else
-	grep -v -e '^/cmd/start-.*$' -e '^/cmd/\(git-gui\|gitk\).exe$' \
+	grep -v -e '^/cmd/start-.*$' -e '^/cmd/\(git-gui\|gitk\|tig\).exe$' \
 		-e '^/etc/\(DIR_COLORS\|inputrc\|vimrc\)$' \
 		-e '^/etc/profile\.d/\(aliases\|env\|git-prompt\)\.sh$' \
 		-e '^/git-\(bash\|cmd\)\.exe$' \
@@ -302,7 +313,7 @@ else
 		-e '^/\(mingw\|clang\)[^/]*/bin/\(WhoUses\|xmlwf\)\.exe$' \
 		-e '^/\(mingw\|clang\)[^/]*/etc/pki' -e '^/\(mingw\|clang\)[^/]*/lib/p11-kit/' \
 		-e '/git-\(add--interactive\|archimport\|citool\|cvs.*\)$' \
-		-e '/git-\(gui.*\|instaweb\|p4\|relink\)$' \
+		-e '/git-\(gui.*\|p4\|relink\)$' \
 		-e '/git-\(send-email\|svn\)$' \
 		-e '/\(mingw\|clang\)[^/]*/libexec/git-core/git-\(imap-send\|daemon\)\.exe$' \
 		-e '/\(mingw\|clang\)[^/]*/libexec/git-core/git-remote-ftp.*\.exe$' \
@@ -315,7 +326,7 @@ else
 		-e '^/\(mingw\|clang\)[^/]*/share/gettext-' \
 		-e '^/\(mingw\|clang\)[^/]*/share/git/\(builtins\|compat\|completion\)' \
 		-e '^/\(mingw\|clang\)[^/]*/share/git/.*\.ico$' \
-		-e '^/\(mingw\|clang\)[^/]*/share/\(git-gui\|gitweb\)/' \
+		-e '^/\(mingw\|clang\)[^/]*/share/git-gui/' \
 		-e '^/\(mingw\|clang\)[^/]*/share/perl' \
 		-e '^/\(mingw\|clang\)[^/]*/share/pki/' \
 		-e '/zsh/' \
@@ -342,7 +353,7 @@ else
 		-e '^/usr/bin/\(stty\|sum\|sync\|tac\|tee\|timeout\)\.exe$' \
 		-e '^/usr/bin/\(truncate\|tsort\|tty\|tzset\|umount\)\.exe$' \
 		-e '^/usr/bin/\(unexpand\|unlink\|users\|vdir\|who.*\)\.exe$' \
-		-e '^/usr/bin/msys-\(cilkrts\|ssl\)-.*\.dll$' \
+		-e '^/usr/bin/msys-\(cilkrts\|ssl\|uuid\)-.*\.dll$' \
 		-e '^/usr/bin/msys-sqlite3[a-z].*\.dll$' \
 		-e '^/usr/bin/msys-\(gomp.*\|vtv.*\)-.*\.dll$' \
 		-e '^/usr/lib/\(awk\|coreutils\|gawk\|openssl\|pkcs11\)/' \
@@ -352,7 +363,7 @@ else
 		-e '^/usr/ssl/misc/' \
 		-e '^/usr/bin/\(captoinfo\|clear\|infocmp\|infotocap\)\.exe$' \
 		-e '^/usr/bin/\(reset\|tabs\|tic\|toe\|tput\|tset\)\.exe$' \
-		-e '^/usr/bin/msys-ticw6\.dll$' \
+		-e '^/usr/bin/msys-\(ticw6\|smartcols-[0-9]*\)\.dll$' \
 		-e '^/usr/\(lib\|share\)/terminfo/' -e '^/usr/share/tabset/' \
 		-e "^\\($(echo $EXTRA_FILE_EXCLUDES |
 			sed 's/ /\\|/g')\\)\$"

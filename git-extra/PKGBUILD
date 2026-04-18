@@ -5,7 +5,7 @@ pkgbase="mingw-w64-${_realname}"
 pkgname=($_realname
         "${MINGW_PACKAGE_PREFIX}-${_realname}")
 _ver_base=1.1
-pkgver=1.1.676.f684e74d5
+pkgver=1.1.689.fe8c5259c
 pkgrel=1
 pkgdesc="Git for Windows extra files"
 arch=('any')
@@ -74,15 +74,15 @@ sha256sums=('8ed76d1cb069ac8568f21c431f5e23caebea502d932ab4cdff71396f4f0d5b72'
             'd212e1bbe75a9f81443126701324c9c44c3ed5750dd9822eba754a1799ed13b3'
             '402c51eba82453a76f5110f4754bb1005df507a6e4532574c2b9627ff4e1dc81'
             '8433a9e72b3bc9c3bc7903b54b868399bdb17a6c8de4af4dd5450dd42859c898'
-            '0a4d04eb5ce035f9b94ebad51f0fc366ffda1f384fa6e586e8eef140440fb012'
-            '8056f48ae61f2cba668c07b31c56229914912444ca6656205aaffce59b8e6b11'
+            'e2d0e4c58dca8ad7dba59df5db37a6ffb917f984edf67ae51d3f4c2db06e459b'
+            'a7540390bf956f33f6497a87c8986e124a8ecdacad26d0f75695c83dc2410d96'
             '32c9a549ecb1c9e06622221dae98a000ac2ce9c2be97d5d0c4f80610af3dc55c'
             '02d38e480a1ec4227e94a5aa073945901680aa3387e3386f8b77f10426ebbc75'
             'dcbd1b981d5b899afe30151a5f5a27ea52025ff1335f131af1b5891f62ddd55b'
             '683ab066be19cb4defec470ebd53f165ca5dbf761fd40c13aee8abe31ba42803'
             '1cf2c13fb97c51375a76ed479362c3cbcdb51ab4d3a745e8d2c3a780badd8d46'
-            '32223da4e1264d0c9663dd3d4b347131a634e96c2676d673ca58b2a6c58d2aea'
-            'b3393a6197ee920d27a646b59c5bdafff15da31772fff59bc9f8fbc9f5d358cb'
+            'c6a92fc3bc23f19d396e9544353495d4591be481e9890f7bbb5968f7693091da'
+            '1fae4ff3ce1e75ac90fe6f6130db4d041bc34f59deea679501f57d2c41d37560'
             '22f41610dea842890955032af30efdb60e80f310e95a04e57ab36b10e0376923'
             '8120b41b869693e07acc4707a0ab45505e7c5e4156a3a44b19152f1f425df85f'
             '15b40ab72dea884f659cfbe441e9a40b2d8d63e490a3c14824a55607368e476d'

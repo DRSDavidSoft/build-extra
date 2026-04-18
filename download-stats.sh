@@ -8,11 +8,14 @@ test "--update" != "$1" || {
 	 https://api.github.com/repos/git-for-windows/git/releases |
 	tac |
 	sed -n '/^  }/{
-    :1;N;/\n  {/b2;b1
-    :2;
-    y/\n/\r/
-    s/.*"tag_name": "\([^"]*\)".*"id": \([0-9]*\).*/# \1\n#id=${1:-\2}/p
-}' | sed '$s/^#//' >"${0%.sh}".ids &&
+	    :1;N;/\n  {/b2;b1
+	    :2
+	    y/\n/\r/
+	    s/.*"tag_name": "\(v[^"]*\)".*"id": \([0-9]*\).*/\2\t# \1\t#id=${1:-\2}/p
+	}' |
+	sort -n -k1 |
+	sed 's/.*\t\(.*\)\t/\1\n/' |
+	sed '$s/^#//' >"${0%.sh}".ids &&
 	echo "$ids" |
 	sed -i -e '/^#\( v\?2.*windows\|id=\)/d' -e '/^id=/d' \
 		-e "/^# IDs/r${0%.sh}.ids" "$0"
@@ -20,50 +23,20 @@ test "--update" != "$1" || {
 }
 
 # IDs
-# v2.47.0-rc1.windows.1
-#id=${1:-178409848}
-# v2.47.0.windows.1
-#id=${1:-178862511}
-# v2.47.0.windows.2
-#id=${1:-181195607}
-# v2.47.1.windows.1
-#id=${1:-187316499}
-# v2.45.2.windows.2
-#id=${1:-194747286}
-# v2.46.2.windows.2
-#id=${1:-194747427}
-# v2.47.1.windows.2
-#id=${1:-194744802}
-# v2.48.0-rc0.windows.1
-#id=${1:-191152969}
-# v2.48.0-rc1.windows.1
-#id=${1:-192775516}
-# v2.48.0-rc2.windows.1
-#id=${1:-193961175}
-# v2.48.1.windows.1
-#id=${1:-200107601}
-# v2.49.0-rc0.windows.1
-#id=${1:-202669466}
-# v2.49.0-rc1.windows.1
-#id=${1:-203879851}
-# v2.49.0-rc2.windows.1
-#id=${1:-204978696}
-# v2.49.0.windows.1
-#id=${1:-206186691}
 # v2.50.0-rc0.windows.1
 #id=${1:-222752723}
 # v2.50.0-rc1.windows.1
 #id=${1:-223176253}
 # v2.50.0-rc2.windows.1
 #id=${1:-224514444}
-# v2.47.3.windows.1
-#id=${1:-230917661}
-# v2.49.1.windows.1
-#id=${1:-230918013}
 # v2.50.0.windows.1
 #id=${1:-225681115}
 # v2.50.0.windows.2
 #id=${1:-229083539}
+# v2.47.3.windows.1
+#id=${1:-230917661}
+# v2.49.1.windows.1
+#id=${1:-230918013}
 # v2.50.1.windows.1
 #id=${1:-230918440}
 # v2.51.0-rc0.windows.1
@@ -79,7 +52,35 @@ test "--update" != "$1" || {
 # v2.51.1.windows.1
 #id=${1:-255320915}
 # v2.51.2.windows.1
-id=${1:-257810242}
+#id=${1:-257810242}
+# v2.52.0-rc0.windows.1
+#id=${1:-259668314}
+# v2.52.0-rc1.windows.1
+#id=${1:-260837661}
+# v2.52.0-rc2.windows.1
+#id=${1:-262068031}
+# v2.52.0.windows.1
+#id=${1:-263075616}
+# v2.53.0-rc0.windows.1
+#id=${1:-277408168}
+# v2.53.0-rc1.windows.1
+#id=${1:-279367964}
+# v2.53.0-rc2.windows.1
+#id=${1:-280723671}
+# v2.53.0.windows.1
+#id=${1:-282307065}
+# v2.51.2.windows.2
+#id=${1:-295300714}
+# v2.52.0.windows.2
+#id=${1:-295324156}
+# v2.53.0.windows.2
+#id=${1:-295340420}
+# v2.54.0-rc0.windows.1
+#id=${1:-304969855}
+# v2.54.0-rc1.windows.1
+#id=${1:-306923907}
+# v2.53.0.windows.3
+id=${1:-308951575}
 # v2.11.1.mingit-prerelease.6
 # v2.11.1.mingit-prerelease.4
 # v2.11.1.mingit-prerelease.5
@@ -203,4 +204,8 @@ case "$id" in
 esac
 
 curl -s https://api.github.com/repos/git-for-windows/git/releases/$id/assets |
-grep -e '"name":' -e '"download_count":'
+grep -e '"name":' -e '"download_count":' |
+sed 'N
+	s/.*"download_count": *\([0-9]*\).*"name": *"\([^"]*\).*/\1\t\2/
+	s/.*"name": *"\([^"]*\).*"download_count": *\([0-9]*\).*/\2\t\1/
+' | sort -n -r -k1

@@ -154,6 +154,7 @@ sdk () {
 	# for building
 	makepkg|makepkg-mingw)
 		cmd=$1; shift
+		WITH_PDBS="$(! grep -q WITH_PDBS PKGBUILD || ! sdk find_mspdb_dll || echo true)" \
 		WITHOUT_PDBS="$(! grep -q WITHOUT_PDBS PKGBUILD || sdk find_mspdb_dll || echo true)" \
 		MAKEFLAGS=${MAKEFLAGS:--j$(nproc)} PKGEXT='.pkg.tar.xz' $cmd --syncdeps --noconfirm --skipchecksums --skippgpcheck "$@"
 		;;
@@ -246,13 +247,17 @@ sdk () {
 			unset MINGW_MOUNT_POINT
 			PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig:/lib/pkgconfig"
 			second_path=$first_path
-			first_path=/usr/bin:/opt/bin
+			first_path=/cmd:/usr/bin:/opt/bin
 			;;
 		esac
 		. /etc/msystem
 
-		PATH="$first_path:$second_path:$(echo "$PATH" |
-			sed -e "s|:\($first_path\|$second_path\)/\?:|:|g")"
+		PATH="$(echo "$first_path:$second_path:$PATH" | awk '
+			# Filter out duplicate and empty entries
+			BEGIN { RS=":" }
+			$0 != "" && !seen[$0]++ { out = (out ? out ":" $0 : $0) }
+			END { print out }
+		')"
 		return $?
 		;;
 	init)
